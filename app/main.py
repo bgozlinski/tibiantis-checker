@@ -1,7 +1,6 @@
 from fastapi import FastAPI
+from app.api import character
 
 app = FastAPI()
 
-@app.get("/")
-def root():
-    return {"message": "Tibiantis Character Tracker API"}
+app.include_router(character.router, prefix="/characters", tags=["Characters"])
