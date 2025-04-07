@@ -18,6 +18,8 @@ async def update_character_table():
     try:
         response = requests.get("http://localhost:8002/characters")
         data = response.json()
+
+        data.sort(key=lambda c: c['last_login'] or "0000-01-01", reverse=True)
     except Exception as e:
         await channel.send(f"❌ Błąd pobierania danych z API: {e}")
         return
@@ -27,16 +29,24 @@ async def update_character_table():
         return
 
     table = "**Lista postaci:**\n```\n"
-    table += f"{'Nazwa':<20} {'Last Login':<20} {'Lokalizacja'}\n"
+    table += f"{'Nazwa':<20} {'Data':<12} {'Godzina':<8} {'Lokalizacja'}\n"
     table += "-" * 60 + "\n"
 
     for char in data:
         name = char['name']
-        login = char['last_login'] or "-"
-        if login and isinstance(login, str):
-            login = login.split(".")[0]
+        login = char['last_login']
         location = char.get('last_seen_location') or "-"
-        table += f"{name:<20} {login:<20} {location}\n"
+
+        if login:
+            if isinstance(login, str):
+                login = login.split(".")[0]  # '2025-04-07T14:12:00'
+            date_part = login.split("T")[0]
+            time_part = login.split("T")[1][:5]
+        else:
+            date_part = "-"
+            time_part = "-"
+
+        table += f"{name:<20} {date_part:<12} {time_part:<8} {location}\n"
 
     table += "```"
     await channel.send(table)
