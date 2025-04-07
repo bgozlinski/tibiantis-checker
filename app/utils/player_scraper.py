@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from app.utils.last_login_strip import get_last_login_strip
 
 
 def player_scrape(player_name: str) ->  dict:
@@ -37,12 +36,10 @@ def player_scrape(player_name: str) ->  dict:
         if not last_login:
             raise ValueError("Last login information not found.")
 
-        minutes_since_last_login = get_last_login_strip(last_login)
 
         return {
             "player": player_name,
             "last_login": last_login,
-            "minutes_since_last_login": minutes_since_last_login
         }
 
     except requests.RequestException as e:
