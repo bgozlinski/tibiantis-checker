@@ -6,12 +6,12 @@ class CharacterCreate(BaseModel):
     name: str
 
 class CharacterUpdate(BaseModel):
+    name: Optional[str] = None
     last_seen_location: Optional[str] = None
     last_login: Optional[datetime] = None
 
 class CharacterOut(CharacterCreate):
     id: int
-    name: str
     last_seen_location: str | None = None
     last_login: Optional[datetime] = None
 
