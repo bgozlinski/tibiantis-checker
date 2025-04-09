@@ -9,3 +9,5 @@ class Character(Base):
     name = Column(String, index=True)
     last_seen_location = Column(String, nullable=True)
     last_login = Column(DateTime, nullable=True)
+    level = Column(Integer, nullable=True)
+    vocation = Column(String, nullable=True)

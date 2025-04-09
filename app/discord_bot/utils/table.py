@@ -28,12 +28,14 @@ async def update_character_table():
 
     data.sort(key=lambda c: c['last_login'] or "0000-01-01", reverse=True)
 
-    header = f"{'Nazwa':<20} {'Data':<12} {'Godzina':<8} {'Lokalizacja'}\n"
-    separator = "-" * 60 + "\n"
+    header = f"{'Nazwa':<20} {'Lvl':<5} {'Voc':<12} {'Data':<12} {'Godzina':<8} {'Lokalizacja'}\n"
+    separator = "-" * 80 + "\n"
 
     lines = [header, separator]
     for char in data:
         name = char['name']
+        level = str(char.get('level') or '-')
+        vocation = char.get('vocation') or "-"
         login = char['last_login']
         location = char.get('last_seen_location') or "-"
 
@@ -46,14 +48,14 @@ async def update_character_table():
             date_part = "-"
             time_part = "-"
 
-        lines.append(f"{name[:20]:<20} {date_part:<12} {time_part:<8} {location[:30]}")
+        lines.append(f"{name[:20]:<20} {level:<5} {vocation[:12]:<12} {date_part:<12} {time_part:<8} {location[:30]}")
 
     full_table = lines
     chunk = ""
     MAX_LENGTH = 1900
 
     for line in full_table:
-        if len(chunk) + len(line) + 6 > MAX_LENGTH:  # 6 for the code block
+        if len(chunk) + len(line) + 6 > MAX_LENGTH:
             try:
                 await channel.send(f"```{chunk}```")
             except Exception as e:

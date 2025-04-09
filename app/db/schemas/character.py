@@ -9,11 +9,16 @@ class CharacterUpdate(BaseModel):
     name: Optional[str] = None
     last_seen_location: Optional[str] = None
     last_login: Optional[datetime] = None
+    level: Optional[int] = None
+    vocation: Optional[str] = None
 
-class CharacterOut(CharacterCreate):
+class CharacterOut(BaseModel):
     id: int
-    last_seen_location: str | None = None
+    name: str
+    last_seen_location: Optional[str] = None
     last_login: Optional[datetime] = None
+    level: Optional[int] = None
+    vocation: Optional[str] = None
 
     class Config:
         from_attributes = True
