@@ -55,8 +55,7 @@ async def update_character_table():
     for line in full_table:
         if len(chunk) + len(line) + 6 > MAX_LENGTH:  # 6 for the code block
             try:
-                await channel.send(f"```
-{chunk}```")
+                await channel.send(f"```{chunk}```")
             except Exception as e:
                 print(f"❌ Błąd wysyłania wiadomości: {e}")
             chunk = ""
@@ -64,7 +63,6 @@ async def update_character_table():
 
     if chunk:
         try:
-            await channel.send(f"```
-{chunk}```")
+            await channel.send(f"```{chunk}```")
         except Exception as e:
             print(f"❌ Błąd wysyłania wiadomości: {e}")
