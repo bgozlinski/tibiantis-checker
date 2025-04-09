@@ -18,8 +18,6 @@ async def update_character_table():
     try:
         response = requests.get("http://localhost:8002/characters")
         data = response.json()
-
-        data.sort(key=lambda c: c['last_login'] or "0000-01-01", reverse=True)
     except Exception as e:
         await channel.send(f"❌ Błąd pobierania danych z API: {e}")
         return
@@ -28,10 +26,12 @@ async def update_character_table():
         await channel.send("Brak postaci do wyświetlenia.")
         return
 
-    table = "**Lista postaci:**\n```\n"
-    table += f"{'Nazwa':<20} {'Data':<12} {'Godzina':<8} {'Lokalizacja'}\n"
-    table += "-" * 60 + "\n"
+    data.sort(key=lambda c: c['last_login'] or "0000-01-01", reverse=True)
 
+    header = f"{'Nazwa':<20} {'Data':<12} {'Godzina':<8} {'Lokalizacja'}\n"
+    separator = "-" * 60 + "\n"
+
+    lines = [header, separator]
     for char in data:
         name = char['name']
         login = char['last_login']
@@ -39,14 +39,32 @@ async def update_character_table():
 
         if login:
             if isinstance(login, str):
-                login = login.split(".")[0]  # '2025-04-07T14:12:00'
+                login = login.split(".")[0]
             date_part = login.split("T")[0]
             time_part = login.split("T")[1][:5]
         else:
             date_part = "-"
             time_part = "-"
 
-        table += f"{name:<20} {date_part:<12} {time_part:<8} {location}\n"
+        lines.append(f"{name[:20]:<20} {date_part:<12} {time_part:<8} {location[:30]}")
 
-    table += "```"
-    await channel.send(table)
+    full_table = lines
+    chunk = ""
+    MAX_LENGTH = 1900
+
+    for line in full_table:
+        if len(chunk) + len(line) + 6 > MAX_LENGTH:  # 6 for the code block
+            try:
+                await channel.send(f"```
+{chunk}```")
+            except Exception as e:
+                print(f"❌ Błąd wysyłania wiadomości: {e}")
+            chunk = ""
+        chunk += line + "\n"
+
+    if chunk:
+        try:
+            await channel.send(f"```
+{chunk}```")
+        except Exception as e:
+            print(f"❌ Błąd wysyłania wiadomości: {e}")
